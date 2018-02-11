@@ -35,20 +35,20 @@ function onPoseEdge(pose, edge)
         end
       end
 end
-
-
-centerYaw = 0
-function center()
-    centerYaw = myo.getYaw()
-end
-
+i = 0
+totalDelta = 0
 function onPeriodic()
-  local currentYaw = myo.getYaw()
-  local deltaYaw = calculateDelta(currentYaw, centreYaw)
-  if (deltaYaw > YAW_DEADZONE) then
-    rightPunch()
-    currentYaw = 0
-  end
+  if(i == 10) then
+    i = 0
+    if( totalDelta > .2) then
+      rightPunch()
+    elseif( totalDelta < -.2) then
+      leftPunch()
+    end
+  else
+    i = i + 1
+    totalDelta = totalDelta + (myo.getYaw() - centreYaw)
+  end 
 end
 
 function leftPunch()
@@ -62,14 +62,4 @@ end
 function escape()
   centreYaw = 0
     myo.keyboard("escape", "press")
-end
-
-function calculateDelta(currentYaw, centreYaw)
-  local deltaYaw = currentYaw - centreYaw
-  if (deltaYaw > PI) then
-    deltaYaw = deltaYaw - (2 * PI)
-  elseif (deltaYaw < -PI) then
-    deltaYaw = deltaYaw + (2 * PI)
-  end
-  return deltaYaw
 end
